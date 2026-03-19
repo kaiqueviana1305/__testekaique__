@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 
@@ -24,47 +24,56 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Campaign Dashboard</h1>
-          <p className="text-gray-500 text-sm mt-1">Mídia paga centralizada</p>
+    <div className="min-h-screen bg-[#0d1117] flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-600 mb-4">
+            <span className="text-white font-bold text-xl">S</span>
+          </div>
+          <h1 className="text-2xl font-bold text-white">Seppala Dashboard</h1>
+          <p className="text-[#8b949e] text-sm mt-1">Gestão de campanhas centralizada</p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Usuário</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
-              placeholder="seu_usuario"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
-              placeholder="••••••••"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors disabled:opacity-50"
-          >
-            {loading ? "Entrando..." : "Entrar"}
-          </button>
-        </form>
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Não tem conta?{" "}
-          <a href="/register" className="text-blue-600 hover:underline">Registre-se</a>
-        </p>
+
+        <div className="bg-[#161b22] border border-[#21262d] rounded-2xl p-8">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs text-[#8b949e] font-medium mb-1.5">Usuário</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                className="w-full bg-[#0d1117] border border-[#30363d] text-white rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-500 placeholder-[#6b7280]"
+                placeholder="seu_usuario"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-[#8b949e] font-medium mb-1.5">Senha</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full bg-[#0d1117] border border-[#30363d] text-white rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-500 placeholder-[#6b7280]"
+                placeholder="••••••••"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition-colors disabled:opacity-50 mt-2"
+            >
+              {loading ? "Entrando..." : "Entrar"}
+            </button>
+          </form>
+          <p className="text-center text-sm text-[#8b949e] mt-5">
+            Não tem conta?{" "}
+            <Link to="/register" className="text-blue-400 hover:text-blue-300 transition-colors">
+              Registre-se
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

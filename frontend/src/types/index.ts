@@ -1,5 +1,7 @@
 export type Platform = "meta" | "linkedin" | "google_ads" | "google_sheets";
 
+export type DashboardType = "ecommerce" | "leads";
+
 export interface User {
   id: number;
   username: string;
@@ -8,6 +10,20 @@ export interface User {
   last_name: string;
   company: string;
   timezone: string;
+}
+
+export interface Client {
+  id: string;
+  name: string;
+  dashboardType: DashboardType;
+  color: string;
+  platforms: Platform[];
+  lastSync?: string;
+  kpiPreview?: {
+    label: string;
+    value: string;
+    trend?: number;
+  }[];
 }
 
 export interface PlatformConnection {
