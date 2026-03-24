@@ -27,7 +27,7 @@ const LogoutIcon = () => (
 );
 
 const NAV_ITEMS = [
-  { path: "/",             label: "Dashboard",   Icon: DashboardIcon },
+  { path: "/dashboard",    label: "Dashboard",   Icon: DashboardIcon },
   { path: "/integrations", label: "Integrações", Icon: IntegrationsIcon },
 ];
 
