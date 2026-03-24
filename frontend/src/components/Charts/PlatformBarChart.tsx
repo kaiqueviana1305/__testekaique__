@@ -1,17 +1,17 @@
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import type { PlatformKPI } from "../../types";
 
 const PLATFORM_COLORS: Record<string, string> = {
-  meta: "#1877F2",
-  linkedin: "#0A66C2",
-  google_ads: "#EA4335",
+  meta:       "#6366f1",
+  linkedin:   "#0A66C2",
+  google_ads: "#f43f5e",
 };
 
 const PLATFORM_LABELS: Record<string, string> = {
-  meta: "Meta Ads",
-  linkedin: "LinkedIn Ads",
+  meta:       "Meta Ads",
+  linkedin:   "LinkedIn",
   google_ads: "Google Ads",
 };
 
@@ -22,40 +22,75 @@ interface PlatformBarChartProps {
 }
 
 const METRIC_LABELS: Record<string, string> = {
-  total_spend: "Investimento (R$)",
+  total_spend:  "Investimento (R$)",
   total_clicks: "Cliques",
-  total_leads: "Leads",
-  cpl: "CPL (R$)",
-  cpc: "CPC (R$)",
+  total_leads:  "Leads",
+  cpl:          "CPL (R$)",
+  cpc:          "CPC (R$)",
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CustomTooltip = ({ active, payload, metric }: any) => {
+  if (!active || !payload?.length) return null;
+  const isCurrency = ["total_spend", "cpl", "cpc"].includes(metric);
+  return (
+    <div
+      className="rounded-xl px-3 py-2.5 text-xs shadow-lg"
+      style={{ background: "#0B1120", border: "1px solid #1e2d47", minWidth: 120 }}
+    >
+      <p className="font-semibold mb-1" style={{ color: "#94a3b8" }}>{payload[0].payload.name}</p>
+      <p className="font-bold" style={{ color: "#f1f5f9" }}>
+        {isCurrency
+          ? `R$ ${Number(payload[0].value).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+          : Number(payload[0].value).toLocaleString("pt-BR")}
+      </p>
+    </div>
+  );
 };
 
 export function PlatformBarChart({ data, metric = "total_spend", loading }: PlatformBarChartProps) {
   if (loading) {
-    return <div className="h-56 bg-gray-50 rounded-xl animate-pulse" />;
+    return (
+      <div className="bg-white rounded-2xl p-5 h-56 flex flex-col gap-3" style={{ border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 3px rgba(0,0,0,0.07)" }}>
+        <div className="h-4 w-40 bg-slate-100 rounded animate-pulse" />
+        <div className="flex-1 bg-slate-50 rounded-xl animate-pulse" />
+      </div>
+    );
   }
 
   const chartData = data.map((d) => ({
-    name: PLATFORM_LABELS[d.platform] ?? d.platform,
-    value: d[metric],
+    name:     PLATFORM_LABELS[d.platform] ?? d.platform,
+    value:    d[metric],
     platform: d.platform,
   }));
 
   return (
-    <div className="bg-white rounded-xl border p-5">
-      <h3 className="text-sm font-semibold text-gray-700 mb-4">{METRIC_LABELS[metric]} por plataforma</h3>
+    <div
+      className="bg-white rounded-2xl p-5"
+      style={{ border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 3px rgba(0,0,0,0.07)" }}
+    >
+      <p className="text-sm font-semibold text-slate-700 mb-4">
+        {METRIC_LABELS[metric]} por plataforma
+      </p>
       <ResponsiveContainer width="100%" height={220}>
-        <BarChart data={chartData} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-          <XAxis type="number" tick={{ fontSize: 11 }} />
-          <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} width={90} />
-          <Tooltip
-            formatter={(val: number) =>
-              ["total_spend", "cpl", "cpc"].includes(metric)
-                ? `R$ ${val.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-                : val.toLocaleString("pt-BR")
-            }
+        <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 12, left: 4, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
+          <XAxis
+            type="number"
+            tick={{ fontSize: 11, fill: "#94a3b8" }}
+            axisLine={false}
+            tickLine={false}
           />
-          <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+          <YAxis
+            type="category"
+            dataKey="name"
+            tick={{ fontSize: 12, fill: "#64748b" }}
+            width={85}
+            axisLine={false}
+            tickLine={false}
+          />
+          <Tooltip content={<CustomTooltip metric={metric} />} cursor={{ fill: "rgba(99,102,241,0.04)" }} />
+          <Bar dataKey="value" radius={[0, 6, 6, 0]} maxBarSize={28}>
             {chartData.map((entry, i) => (
               <Cell key={i} fill={PLATFORM_COLORS[entry.platform] ?? "#6366f1"} />
             ))}

@@ -12,6 +12,13 @@ import type { Platform } from "../types";
 
 type MetricKey = "spend" | "clicks" | "impressions" | "leads";
 
+const METRIC_OPTIONS: { key: MetricKey; label: string }[] = [
+  { key: "spend",       label: "Investimento" },
+  { key: "clicks",      label: "Cliques" },
+  { key: "impressions", label: "Impressões" },
+  { key: "leads",       label: "Leads" },
+];
+
 export function DashboardPage() {
   const { preset, range, setPreset } = useDateRange("last_30_days");
   const [platform, setPlatform] = useState<Platform | "all">("all");
@@ -19,7 +26,7 @@ export function DashboardPage() {
 
   const params: Record<string, string> = {
     date_from: range.date_from,
-    date_to: range.date_to,
+    date_to:   range.date_to,
   };
   if (platform !== "all") params.platform = platform;
 
@@ -37,7 +44,7 @@ export function DashboardPage() {
   const { data: timeseriesData, isLoading: tsLoading } = useQuery({
     queryKey: ["timeseries", params],
     queryFn: () =>
-      campaignsApi.timeseries({ ...params, group_by: platform === "all" ? "date" : "date" }).then((r) => r.data),
+      campaignsApi.timeseries({ ...params, group_by: "date" }).then((r) => r.data),
   });
 
   const { data: campaignsData, isLoading: campaignsLoading } = useQuery({
@@ -46,21 +53,24 @@ export function DashboardPage() {
   });
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="text-xl font-bold text-gray-900">Dashboard de Campanhas</h1>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <PlatformFilter selected={platform} onChange={setPlatform} />
+    <div className="space-y-6 animate-fade-in">
+      {/* Page header */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900">Dashboard de Campanhas</h1>
+          <p className="text-sm text-slate-400 mt-0.5">Visão geral da performance de mídia paga</p>
         </div>
+        <PlatformFilter selected={platform} onChange={setPlatform} />
       </div>
 
-      {/* Date picker */}
+      {/* Date range */}
       <DateRangePicker
         preset={preset}
         dateFrom={range.date_from}
         dateTo={range.date_to}
-        onChange={(p, from, to) => setPreset(p as Parameters<typeof setPreset>[0], from && to ? { date_from: from, date_to: to } : undefined)}
+        onChange={(p, from, to) =>
+          setPreset(p as Parameters<typeof setPreset>[0], from && to ? { date_from: from, date_to: to } : undefined)
+        }
       />
 
       {/* KPI Grid */}
@@ -68,17 +78,21 @@ export function DashboardPage() {
 
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
-          <div className="flex gap-2 mb-3 flex-wrap">
-            {(["spend", "clicks", "impressions", "leads"] as MetricKey[]).map((m) => (
+        <div className="lg:col-span-2 flex flex-col gap-3">
+          {/* Metric selector */}
+          <div className="flex items-center gap-1 self-start bg-white rounded-xl p-1" style={{ border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+            {METRIC_OPTIONS.map(({ key, label }) => (
               <button
-                key={m}
-                onClick={() => setChartMetric(m)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
-                  chartMetric === m ? "bg-blue-600 text-white" : "bg-white border text-gray-600 hover:border-blue-400"
-                }`}
+                key={key}
+                onClick={() => setChartMetric(key)}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150"
+                style={
+                  chartMetric === key
+                    ? { background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)", color: "white" }
+                    : { color: "#64748b" }
+                }
               >
-                {m === "spend" ? "Investimento" : m === "clicks" ? "Cliques" : m === "impressions" ? "Impressões" : "Leads"}
+                {label}
               </button>
             ))}
           </div>
@@ -95,7 +109,14 @@ export function DashboardPage() {
 
       {/* Campaign table */}
       <div>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">Campanhas</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-base font-semibold text-slate-800">Campanhas</h2>
+          {campaignsData?.length > 0 && (
+            <span className="text-xs font-medium px-2.5 py-1 rounded-full" style={{ background: "rgba(99,102,241,0.08)", color: "#6366f1" }}>
+              {campaignsData.length} campanhas
+            </span>
+          )}
+        </div>
         <CampaignTable campaigns={campaignsData ?? []} loading={campaignsLoading} />
       </div>
     </div>
