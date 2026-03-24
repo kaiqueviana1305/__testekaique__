@@ -26,10 +26,22 @@ const LogoutIcon = () => (
   </svg>
 );
 
+// Seppala wolf icon (simplified SVG)
+const SeppalaLogo = () => (
+  <svg width="28" height="28" viewBox="0 0 100 100" fill="#E31E24">
+    <path d="M50 5 L75 20 L80 45 L95 55 L85 65 L70 60 L60 80 L50 75 L45 85 L35 70 L20 72 L15 55 L30 45 L25 20 Z" />
+  </svg>
+);
+
 const NAV_ITEMS = [
   { path: "/dashboard",    label: "Dashboard",   Icon: DashboardIcon },
   { path: "/integrations", label: "Integrações", Icon: IntegrationsIcon },
 ];
+
+const R = "#E31E24";
+const BLACK = "#0D0D0D";
+const DARK = "#141414";
+const BORDER = "#2a2a2a";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
@@ -46,56 +58,41 @@ export function Layout({ children }: { children: React.ReactNode }) {
     : "U";
 
   return (
-    <div className="min-h-screen flex" style={{ background: "#f1f5f9" }}>
+    <div className="min-h-screen flex" style={{ background: "#f5f5f5" }}>
       {/* Sidebar */}
-      <aside
-        className="w-60 flex flex-col sidebar-scrollbar overflow-y-auto"
-        style={{ background: "#0B1120", minHeight: "100vh" }}
-      >
+      <aside className="w-60 flex flex-col sidebar-scrollbar overflow-y-auto" style={{ background: BLACK, minHeight: "100vh" }}>
+
         {/* Logo */}
-        <div className="px-5 pt-6 pb-5" style={{ borderBottom: "1px solid #1e2d47" }}>
-          <div className="flex items-center gap-2.5">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-              style={{ background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)" }}
-            >
-              S
+        <div className="px-5 pt-6 pb-5" style={{ borderBottom: `1px solid ${BORDER}` }}>
+          <Link to="/" className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "#1a1a1a" }}>
+              <SeppalaLogo />
             </div>
             <div>
-              <p className="font-semibold text-white text-sm leading-tight">Seppala</p>
-              <p className="text-xs" style={{ color: "#64748b" }}>Campaign Dashboard</p>
+              <p className="font-bold text-white text-sm tracking-wide uppercase">Seppala</p>
+              <p className="text-xs" style={{ color: "#555" }}>Campaign Dashboard</p>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Nav */}
         <nav className="flex-1 px-3 pt-4 pb-2 space-y-0.5">
-          <p className="text-xs font-semibold uppercase tracking-widest px-3 mb-2" style={{ color: "#334155" }}>
-            Menu
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-widest px-3 mb-2" style={{ color: "#3a3a3a" }}>Menu</p>
           {NAV_ITEMS.map(({ path, label, Icon }) => {
             const isActive = location.pathname === path;
             return (
               <Link
                 key={path}
                 to={path}
-                className={clsx(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
-                  isActive
-                    ? "text-white"
-                    : "hover:text-white"
-                )}
-                style={
-                  isActive
-                    ? { background: "linear-gradient(135deg, rgba(99,102,241,0.25) 0%, rgba(139,92,246,0.15) 100%)", color: "#a5b4fc", borderLeft: "2px solid #6366f1" }
-                    : { color: "#64748b", borderLeft: "2px solid transparent" }
+                className={clsx("flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150")}
+                style={isActive
+                  ? { background: `${R}18`, color: R, borderLeft: `2px solid ${R}` }
+                  : { color: "#555", borderLeft: "2px solid transparent" }
                 }
-                onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = "#151e30"; }}
-                onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = ""; }}
+                onMouseEnter={(e) => { if (!isActive) { (e.currentTarget as HTMLElement).style.background = DARK; (e.currentTarget as HTMLElement).style.color = "#aaa"; } }}
+                onMouseLeave={(e) => { if (!isActive) { (e.currentTarget as HTMLElement).style.background = ""; (e.currentTarget as HTMLElement).style.color = "#555"; } }}
               >
-                <span style={{ opacity: isActive ? 1 : 0.7 }}>
-                  <Icon />
-                </span>
+                <span style={{ opacity: isActive ? 1 : 0.6 }}><Icon /></span>
                 {label}
               </Link>
             );
@@ -103,30 +100,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* User */}
-        <div className="px-3 pb-4 pt-3" style={{ borderTop: "1px solid #1e2d47" }}>
-          <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg" style={{ background: "#151e30" }}>
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0"
-              style={{ background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)" }}
-            >
+        <div className="px-3 pb-4 pt-3" style={{ borderTop: `1px solid ${BORDER}` }}>
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg" style={{ background: DARK }}>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+              style={{ background: R }}>
               {initials}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-white truncate">
                 {user?.first_name ? `${user.first_name} ${user.last_name ?? ""}`.trim() : user?.username}
               </p>
-              {user?.company && (
-                <p className="text-xs truncate" style={{ color: "#475569" }}>{user.company}</p>
-              )}
+              {user?.company && <p className="text-xs truncate" style={{ color: "#444" }}>{user.company}</p>}
             </div>
-            <button
-              onClick={handleLogout}
-              title="Sair"
-              className="flex-shrink-0 transition-colors"
-              style={{ color: "#475569" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#ef4444"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#475569"; }}
-            >
+            <button onClick={handleLogout} title="Sair" className="flex-shrink-0 transition-colors" style={{ color: "#444" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = R; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#444"; }}>
               <LogoutIcon />
             </button>
           </div>
@@ -135,9 +123,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Main */}
       <main className="flex-1 overflow-auto">
-        <div className="p-6 max-w-screen-2xl mx-auto">
-          {children}
-        </div>
+        <div className="p-6 max-w-screen-2xl mx-auto">{children}</div>
       </main>
     </div>
   );
