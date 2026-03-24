@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import html2canvas from 'html2canvas';
 import { slides } from './carouselData';
 import { CarouselSlide } from './CarouselSlide';
 
@@ -7,7 +8,9 @@ const AUTOPLAY_INTERVAL = 4000;
 export function Carousel() {
   const [current, setCurrent] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
   const touchStartX = useRef<number | null>(null);
+  const slideRef = useRef<HTMLDivElement>(null);
   const total = slides.length;
 
   const goTo = useCallback((index: number) => {
@@ -46,6 +49,25 @@ export function Carousel() {
     touchStartX.current = null;
   }
 
+  async function downloadCurrentSlide() {
+    const el = slideRef.current;
+    if (!el) return;
+    setIsDownloading(true);
+    try {
+      const canvas = await html2canvas(el, {
+        scale: 3,
+        useCORS: true,
+        backgroundColor: null,
+      });
+      const link = document.createElement('a');
+      link.download = `seppala-slide-${current + 1}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } finally {
+      setIsDownloading(false);
+    }
+  }
+
   return (
     <div className="flex flex-col items-center gap-4 select-none">
       {/* Frame do carrossel — proporção quadrada 1:1 estilo Instagram */}
@@ -62,8 +84,13 @@ export function Carousel() {
           className="flex h-full transition-transform duration-500 ease-in-out"
           style={{ width: `${total * 100}%`, transform: `translateX(-${(current * 100) / total}%)` }}
         >
-          {slides.map((slide) => (
-            <div key={slide.id} style={{ width: `${100 / total}%` }} className="h-full flex-shrink-0">
+          {slides.map((slide, i) => (
+            <div
+              key={slide.id}
+              ref={i === current ? slideRef : null}
+              style={{ width: `${100 / total}%` }}
+              className="h-full flex-shrink-0"
+            >
               <CarouselSlide slide={slide} total={total} />
             </div>
           ))}
@@ -107,13 +134,24 @@ export function Carousel() {
         ))}
       </div>
 
-      {/* Botão play/pause */}
-      <button
-        onClick={() => setIsPlaying((p) => !p)}
-        className="text-xs text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-1"
-      >
-        {isPlaying ? '⏸ Pausar' : '▶ Reproduzir'} auto-play
-      </button>
+      {/* Controles */}
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => setIsPlaying((p) => !p)}
+          className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+        >
+          {isPlaying ? '⏸ Pausar' : '▶ Reproduzir'}
+        </button>
+
+        <button
+          onClick={downloadCurrentSlide}
+          disabled={isDownloading}
+          className="text-xs font-semibold px-3 py-1.5 rounded-full transition-colors disabled:opacity-50"
+          style={{ backgroundColor: '#E30613', color: '#fff' }}
+        >
+          {isDownloading ? 'Gerando...' : `⬇ Baixar slide ${current + 1}`}
+        </button>
+      </div>
     </div>
   );
 }

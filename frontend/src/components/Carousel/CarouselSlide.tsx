@@ -1,24 +1,15 @@
 import { SlideData, PLATFORM_COLORS, PLATFORM_LABELS } from './carouselData';
 
-// Lobo Seppala — SVG inline simplificado
-function SeppalWolfLogo({ size = 64, color = '#E30613' }: { size?: number; color?: string }) {
+function SeppalWolfLogo({ size = 64 }: { size?: number; color?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Orelha esquerda */}
-      <polygon points="20,10 35,45 10,40" fill={color} />
-      {/* Orelha direita / ponta */}
-      <polygon points="50,5 65,40 38,38" fill={color} />
-      {/* Cabeça principal */}
-      <path d="M15,42 Q10,60 20,70 Q30,82 50,80 Q70,78 78,65 Q88,50 80,38 Q70,28 55,35 Q45,38 35,35 Q22,32 15,42Z" fill={color} />
-      {/* Focinho */}
-      <path d="M45,68 Q50,78 58,72 Q65,67 62,60 Q55,55 48,60Z" fill={color} />
-      {/* Olho — recorte branco */}
-      <ellipse cx="38" cy="54" rx="5" ry="6" fill="white" />
-      <ellipse cx="60" cy="52" rx="4" ry="5" fill="white" />
-      {/* Pupilas */}
-      <ellipse cx="39" cy="55" rx="2.5" ry="3" fill="#1a1a1a" />
-      <ellipse cx="61" cy="53" rx="2" ry="2.5" fill="#1a1a1a" />
-    </svg>
+    <img
+      src="/seppala-logo.png"
+      alt="Seppala"
+      width={size}
+      height={size}
+      className="object-contain"
+      crossOrigin="anonymous"
+    />
   );
 }
 
