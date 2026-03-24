@@ -42,7 +42,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   };
 
   const initials = user
-    ? ((user.first_name?.[0] ?? "") + (user.last_name?.[0] ?? "") || user.username?.[0] ?? "U").toUpperCase()
+    ? ((user.first_name?.[0] ?? "") + (user.last_name?.[0] ?? "") || (user.username?.[0] ?? "U")).toUpperCase()
     : "U";
 
   return (
